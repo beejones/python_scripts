@@ -1,6 +1,11 @@
 # python_scripts/chart_electricity_prices.py
 # Fetching data from the Nordpool energy prices sensor and formatting it for charting
 
+# Parameters passed to the script
+# logger.error("=====>Script started")
+sensor_entity = data.get('sensor_entity')
+prices_property = data.get('prices_property')
+
 # Define chart data structure
 chart_data = {
     'labels': [],
@@ -8,19 +13,18 @@ chart_data = {
 }
 
 # Fetch the sensor data
-sensor_data = hass.states.get('sensor.nordpool_kwh_be_eur_3_10_021')
-logger.debug("Raw energy Prices:",sensor_data) 
+sensor_data = hass.states.get(sensor_entity)
 
 # Debug: log the raw sensor data
 if sensor_data is not None:
-    logger.info("Raw energy Data: {}".format(sensor_data.attributes))  # Log the attributes of the sensor
+    # logger.error("=====>Raw energy Data: {}".format(sensor_data.attributes))  # Log the attributes of the sensor
 
-    # Access the raw_today attribute
-    raw_today = sensor_data.attributes.get('raw_today', [])
-    logger.info("Raw Today Prices: {}".format(raw_today))  # Log the raw_today data
+    # Access the specified raw property
+    raw_data = sensor_data.attributes.get(prices_property, [])
+    # logger.error("=====>Raw Data for {}: {}".format(prices_property, raw_data))  # Log the specified raw data
 
-    # Populate the chart_data
-    for entry in raw_today:
+    # Populate the chart data
+    for entry in raw_data:
         start_time = entry['start']  # Extracting the start time
         price_value = entry['value']  # Extracting the price value
 
@@ -29,13 +33,14 @@ if sensor_data is not None:
         chart_data['prices'].append(price_value)
 
     # Log the final chart_data for debugging
-    logger.info("Chart Data: {}".format(chart_data))
-    
+    # logger.error("=====>Chart Data: {}".format(chart_data))
+        
     # Return data through output
     output = {}
     output['labels'] = chart_data['labels']
     output['prices'] = chart_data['prices']
+
 else:
-    logger.error("Sensor data not found for 'sensor.nordpool_kwh_be_eur_3_10_021'")
+    error_message = "=====>Sensor data not found for '{}'".format(sensor_entity)
     output = {}
-    output['error'] = "Sensor data not found"
+    output['error'] = error_message
