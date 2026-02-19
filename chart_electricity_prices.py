@@ -2,7 +2,7 @@
 # Fetching data from the Nordpool energy prices sensor and formatting it for charting
 
 # Parameters passed to the script
-# logger.error("=====>Script started")
+logger.info("=====>Script python_scripts/chart_electricity_prices.py started")
 sensor_entity = data.get('sensor_entity')
 prices_property = data.get('prices_property')
 
